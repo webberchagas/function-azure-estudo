@@ -14,26 +14,42 @@ jobs:
   # =====================================================
   build:
     runs-on: ubuntu-latest
-
+    environment: dev
+      
+    env:
+      FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
+      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+      SERVICE_PLAN: ${{ vars.SERVICE_PLAN }}
+      LOCATION: ${{ vars.LOCATION }}
+      JAVA_VERSION: ${{ vars.JAVA_VERSION }}
+    
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-      - name: Build Azure Function with Maven
+      - name: Replace values in pom.xml
+        run: |
+          sed -i "s|\${FUNCTION_APP_NAME}|${FUNCTION_APP_NAME}|g" pom.xml
+          sed -i "s|{RESOURCE_GROUP}|${RESOURCE_GROUP}|g" pom.xml
+          sed -i "s|{SERVICE_PLAN}|${vars.SERVICE_PLAN}|g" pom.xml
+          sed -i "s|{LOCATION}|${vars.LOCATION}|g" pom.xml
+
+      - name: Build Azure Function
         run: ./mvnw clean package -DskipTests
 
-      - name: Upload build artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: function-package
-          path: target/*.jar
+          path: |
+            target/*.jar
+            pom.xml
 
   # =====================================================
   # JOB 2 - DEPLOY
@@ -41,18 +57,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: dev
 
     permissions:
       id-token: write
       contents: read
-
-    env:
-      FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
-      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
-      SERVICE_PLAN: ${{ vars.SERVICE_PLAN }}
-      LOCATION: ${{ vars.LOCATION }}
-
+      
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -61,27 +70,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: function-package
-          path: target
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
+          
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Replace values in pom.xml
-        run: |
-          sed -i "s|\${functionAppName}|${FUNCTION_APP_NAME}|g" pom.xml
-          sed -i "s|{resourceGroup}|${RESOURCE_GROUP}|g" pom.xml
-          sed -i "s|{servicePlane}|${SERVICE_PLAN}|g" pom.xml
-          sed -i "s|{location}|${LOCATION}|g" pom.xml
 
       - name: Deploy Azure Function
         run: ./mvnw azure-functions:deploy
