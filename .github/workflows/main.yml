@@ -42,15 +42,13 @@ jobs:
 
       - name: Build Azure Function
         run: mvn clean package -DskipTests
-
-      - name: Upload artifact
+        
+      - name: Upload function package
         uses: actions/upload-artifact@v4
         with:
           name: function-package
-          path: |
-            target/*.jar
-            pom.xml
-
+          path: target/azure-functions/
+            
   # =====================================================
   # JOB 2 - DEPLOY
   # =====================================================
@@ -71,6 +69,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: function-package
+          path: target/azure-functions/
           
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -80,4 +79,4 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy Azure Function
-        run: mvn azure-functions:deploy
+        run: mvn azure-functions:deploy -DskipTests
