@@ -39,6 +39,7 @@ jobs:
           sed -i "s|{RESOURCE_GROUP}|${RESOURCE_GROUP}|g" pom.xml
           sed -i "s|{SERVICE_PLAN}|${SERVICE_PLAN}|g" pom.xml
           sed -i "s|{LOCATION}|${LOCATION}|g" pom.xml
+          sed -i "s|{JAVA_VERSION}|${JAVA_VERSION}|g" pom.xml
 
       - name: Build Azure Function
         run: mvn clean package -DskipTests
