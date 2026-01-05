@@ -61,18 +61,18 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Prepare package
+        run: |
+          rm -f function-package/local.settings.json
+          cd function-package
+          zip -r ../function.zip .
+
       - name: Deploy Azure Function (Flex)
         env:
           FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
         run: |
-          PACKAGE_PATH="$(pwd)/function-package"
-
-          echo "Deploying from: $PACKAGE_PATH"
-          ls -la "$PACKAGE_PATH"
-
-          az functionapp deploy \
+          az functionapp deployment source config-zip \
             --resource-group "$RESOURCE_GROUP" \
             --name "$FUNCTION_APP_NAME" \
-            --src-path "$PACKAGE_PATH" \
-            --type zip
+            --src function.zip
