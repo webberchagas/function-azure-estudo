@@ -67,6 +67,16 @@ jobs:
           cd function-package
           zip -r ../function.zip .
 
+      - name: Enable public access for deploy
+        env:
+          FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
+          RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+        run: |
+          az functionapp update \
+            --name "$FUNCTION_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --set publicNetworkAccess=Enabled
+
       - name: Deploy Azure Function (Flex)
         env:
           FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
@@ -77,3 +87,13 @@ jobs:
             --name "$FUNCTION_APP_NAME" \
             --src-path function.zip \
             --type zip
+            
+      - name: Disable public access after deploy
+        env:
+          FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
+          RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+        run: |
+          az functionapp update \
+            --name "$FUNCTION_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --set publicNetworkAccess=Disabled
