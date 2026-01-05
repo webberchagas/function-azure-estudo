@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: function-package
-          path: target/azure-functions/
+          path: target/azure-functions/local-build
             
   # =====================================================
   # JOB 2 - DEPLOY
