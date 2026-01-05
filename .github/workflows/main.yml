@@ -66,8 +66,13 @@ jobs:
           FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
         run: |
+          PACKAGE_PATH="$(pwd)/function-package"
+
+          echo "Deploying from: $PACKAGE_PATH"
+          ls -la "$PACKAGE_PATH"
+
           az functionapp deploy \
-            --resource-group $RESOURCE_GROUP \
-            --name $FUNCTION_APP_NAME \
-            --src-path ./function-package \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --src-path "$PACKAGE_PATH" \
             --type zip
