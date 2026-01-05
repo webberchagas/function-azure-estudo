@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: function-package
-          path: target/azure-functions/*
+          path: target/azure-functions/
             
   # =====================================================
   # JOB 2 - DEPLOY
@@ -69,5 +69,5 @@ jobs:
           az functionapp deploy \
             --resource-group $RESOURCE_GROUP \
             --name $FUNCTION_APP_NAME \
-            --src-path ./function-package/local-build \
+            --src-path ./function-package/local-build/ \
             --type zip
