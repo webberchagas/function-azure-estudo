@@ -61,12 +61,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Debug artifact structure
-        run: |
-          pwd
-          ls -la
-          ls -la function-package
-
       - name: Deploy Azure Function (Flex)
         env:
           FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
@@ -75,5 +69,5 @@ jobs:
           az functionapp deploy \
             --resource-group $RESOURCE_GROUP \
             --name $FUNCTION_APP_NAME \
-            --src-path ./function-package \
+            --src-path ./function-package/local-build \
             --type zip
