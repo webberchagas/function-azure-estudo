@@ -72,7 +72,8 @@ jobs:
           FUNCTION_APP_NAME: ${{ vars.FUNCTION_APP_NAME }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
         run: |
-          az functionapp deployment source config-zip \
+          az functionapp deploy \
             --resource-group "$RESOURCE_GROUP" \
             --name "$FUNCTION_APP_NAME" \
-            --src function.zip
+            --src-path function.zip \
+            --type zip
