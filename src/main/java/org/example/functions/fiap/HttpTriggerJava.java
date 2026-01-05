@@ -13,7 +13,7 @@ public class HttpTriggerJava {
      * 1. curl -d "HTTP Body" {your host}/api/HttpTriggerJava
      * 2. curl {your host}/api/HttpTriggerJava?name=HTTP%20Query
      */
-    @FunctionName("HttpTriggerJava")
+    @FunctionName("health")
     public HttpResponseMessage run(
             @HttpTrigger(
                     name = "req",
