@@ -69,5 +69,5 @@ jobs:
           az functionapp deploy \
             --resource-group $RESOURCE_GROUP \
             --name $FUNCTION_APP_NAME \
-            --src-path ./function-package/local-build/ \
+            --src-path ./function-package \
             --type zip
