@@ -70,4 +70,4 @@ jobs:
             --resource-group $RESOURCE_GROUP \
             --name $FUNCTION_APP_NAME \
             --src-path function-package \
-            --type java
+            --type zip
